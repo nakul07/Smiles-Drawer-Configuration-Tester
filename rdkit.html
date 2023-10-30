@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>RDKit Test</title>
+    <meta
+      name="description"
+      content="Play around different available options of Smiles Drawer."
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Droid+Sans:400,700"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+  </head>
+  <script>
+    initRDKitModule().then(function (instance) {
+      RDKitModule = instance;
+      console.log("version: " + RDKitModule.version());
+    });
+  </script>
+  <body>
+    <div class="fixed-div">
+      <h1>RDKit.js demo</h1>
+      <br />
+      <p>
+        Enter the Smiles, modify the Options and <b>Press Enter</b> or
+        <b>Click on Submit</b> to render the structure. Click
+        <b> Copy Options </b> to copy the current configuration.
+      </p>
+      <div class="input-container">
+        <label for="example-input">Smiles</label>
+        <input id="example-input" name="example-input" type="text" />
+        <button onclick="copyJSON()" class="copy-json">Copy Options</button>
+      </div>
+      <div class="canvas-container">
+        <canvas id="example-canvas" width="400" height="400"></canvas>
+      </div>
+      <hr />
+    </div>
+    <div class="scrollable-div">
+      <form onsubmit="handleSubmit(event)">
+        <table>
+          <tr>
+            <th>Options</th>
+            <th>Value</th>
+          </tr>
+          <tr>
+            <td>atomIndices</td>
+            <td>
+              <input
+                type="text"
+                name="addAtomIndices"
+                class="table-input"
+                value="false"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>bondIndices</td>
+            <td>
+              <input
+                type="text"
+                name="addBondIndices "
+                class="table-input"
+                value="false"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>addStereoAnnotation</td>
+            <td>
+              <input
+                type="text"
+                name="addStereoAnnotation"
+                class="table-input"
+                value="false"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>explicitMethyl</td>
+            <td>
+              <input
+                type="text"
+                name="addStereoAnnotation"
+                class="table-input"
+                value="false"
+              />
+            </td>
+          </tr>
+
+          <tr>
+            <td>legend</td>
+            <td>
+              <input
+                type="text"
+                name="legend"
+                class="table-input"
+                value="aspirin"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>legendFontSize</td>
+            <td>
+              <input
+                type="number"
+                name="legendFontSize"
+                class="table-input"
+                value="16"
+                step="any"
+                inputmode="decimal"
+              />
+            </td>
+          </tr>
+
+          <tr>
+            <td>bondLineWidth</td>
+            <td>
+              <input
+                type="number"
+                name="bondLineWidth"
+                class="table-input"
+                value="2.0"
+                step="any"
+                inputmode="decimal"
+              />
+            </td>
+          </tr>
+
+          <tr>
+            <td>annotationFontScale</td>
+            <td>
+              <input
+                type="number"
+                name="annotationFontScale"
+                class="table-input"
+                value="0.5"
+                step="any"
+                inputmode="decimal"
+              />
+            </td>
+          </tr>
+
+          <tr>
+            <td>minFontSize</td>
+            <td>
+              <input
+                type="number"
+                name="minFontSize"
+                class="table-input"
+                value="6"
+                step="any"
+                inputmode="decimal"
+              />
+            </td>
+          </tr>
+
+          <tr>
+            <td>maxFontSize</td>
+            <td>
+              <input
+                type="number"
+                name="maxFontSize"
+                class="table-input"
+                value="40"
+                step="any"
+                inputmode="decimal"
+              />
+            </td>
+          </tr>
+
+          <tr>
+            <td>additionalAtomLabelPadding</td>
+            <td>
+              <input
+                type="number"
+                name="additionalAtomLabelPadding"
+                class="table-input"
+                value="0.0"
+                step="any"
+                inputmode="decimal"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>noAtomLabels</td>
+            <td>
+              <input
+                type="text"
+                name="noAtomLabels"
+                class="table-input"
+                value="false"
+              />
+            </td>
+          </tr>
+        </table>
+        <hr />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+
+    <script>
+      let input = document.getElementById("example-input");
+      let options = {};
+      let smilesDrawer;
+
+      function handleSubmit(event) {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+
+        event.preventDefault();
+
+        // Get form inputs
+        let tableInputs = document.querySelectorAll(".table-input");
+
+        // Store input values in an object
+        for (let i = 0; i < tableInputs.length; i++) {
+          let inputElement = tableInputs[i];
+          let inputValue = inputElement.value;
+          let inputType = inputElement.type;
+          let convertedValue;
+
+          // Perform type conversion based on input type
+          if (inputType === "number") {
+            convertedValue = parseFloat(inputValue);
+          } else if (inputValue.trim().toLowerCase() === "true") {
+            convertedValue = true;
+          } else if (inputValue.trim().toLowerCase() === "false") {
+            convertedValue = false;
+          } else {
+            convertedValue = inputValue;
+          }
+
+          options[inputElement.name] = convertedValue;
+        }
+
+        console.log(input.value);
+        console.log(JSON.stringify(options));
+        var mol = RDKitModule.get_mol(input.value);
+        console.log(mol);
+        var canvas = document.getElementById("example-canvas");
+        mol.draw_to_canvas_with_highlights(canvas, JSON.stringify(options));
+      }
+
+      function copyJSON() {
+        const jsonData = JSON.stringify(options, null, 2);
+        navigator.clipboard
+          .writeText(jsonData)
+          .then(() => {
+            alert("Configuration copied!");
+          })
+          .catch((error) => {
+            alert("Failed to copy Configuration:", error);
+            console.error("Failed to copy Configuration:", error);
+          });
+      }
+
+      input.addEventListener("keypress", function (event) {
+        if (event.keyCode == 13) {
+          handleSubmit(event);
+        }
+      });
+    </script>
+  </body>
+</html>

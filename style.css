@@ -78,3 +78,42 @@ button[type="submit"]:hover,
   margin-right: 10px;
   font-weight: bold;
 }
+
+/* For index.html */
+
+.main-container {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+.smiles-drawer,
+.rd-kit {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.smiles-drawer:hover,
+.rd-kit:hover {
+  background-color: #45a049;
+}
+
+.smiles-drawer-href,
+.rd-kit-href {
+  color: white;
+  text-decoration: none;
+}
+
+.smiles-drawer-href:hover,
+.rd-kit-href:hover {
+  text-decoration: underline;
+}
